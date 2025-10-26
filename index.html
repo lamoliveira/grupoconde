@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau - Salesforce</title>
+    <style>
+        /* Estilos globais */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: white;
+            color: black;
+        }
+
+        /* Cabeçalho fixo */
+        header {
+            background-color: #White;
+            padding: 0px 0px;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        /* Imagem do logo - Estilo padrão (Desktop) */
+        header img {
+            /* MUDANÇA AQUI: Garante que a imagem ocupe 100% da largura do header */
+            content: url('./assets/menu.png'); /* Imagem para Desktop */
+            width: 100%; /* Força a largura total do container */
+            max-width: 100%; 
+            height: auto; /* Mantém a proporção */
+            display: block; /* Garante que a imagem ocupe toda a linha */
+        }
+
+        /* Espaço para evitar sobreposição do conteúdo com o header */
+        /* Ajustei este padding para ser um valor que funcione com uma imagem grande */
+        main {
+            /* Assumindo que a imagem do menu pode ter uma altura considerável ao ocupar 100% da largura. Ajuste este valor (ex: 120px) se necessário */
+            padding-top: 120px; 
+        }
+
+        /* Barra de navegação */
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #000; /* Preto */
+            display: flex;
+            justify-content: center;
+            /* Ajustei o top para considerar uma imagem de menu maior */
+            top: 100px; /* Logo abaixo do cabeçalho - Ajuste conforme a altura da sua imagem */
+            width: 100%;
+            position: fixed;
+            z-index: 999;
+        }
+
+        nav ul li {
+            display: inline;
+        }
+
+        nav ul li a {
+            display: block;
+            color: #da0c0c; /* vermelho */
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav ul li a:hover {
+            background-color: #333; /* Preto mais escuro no hover */
+        }
+
+        /* Seções do site */
+        section {
+            margin: 20px 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .services {
+            background-color: white;
+            padding: 20px;
+        }
+
+        .services img {
+            width: 100%;
+            max-width: 1000px;
+            height: auto;
+            margin: 10px;
+        }
+
+        /* Estilos do rodapé */
+        footer {
+            background-color: #000; /* Preto */
+            color: #a7a4a4; /* Branco */
+            text-align: center;
+            padding: 10px;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+
+        /* Layout responsivo - BREAKPOINTS ATUALIZADOS */
+        /* Estilos para Tablet (máximo 768px) */
+        @media screen and (max-width: 768px) {
+            nav ul {
+                flex-direction: column;
+                top: 55px; /* Ajustar para telas menores */
+            }
+
+            .services img {
+                max-width: 150px;
+            }
+            
+            /* Ajuste para o padding do main, caso o header mude de tamanho */
+             main {
+                padding-top: 80px; 
+            }
+        }
+
+        /* Estilos para Mobile (máximo 480px) */
+        @media screen and (max-width: 480px) {
+            header {
+                font-size: 1.2em;
+            }
+            
+            /* Altera a imagem do logo para mobile e mantém 100% de largura */
+            header img {
+                content: url('./assets/menu2.png'); /* Imagem para Mobile */
+                width: 100%; /* Garante largura total no mobile */
+            }
+
+            nav ul {
+                /* Ajustei o top para considerar uma imagem de menu maior no mobile */
+                top: 60px; 
+            }
+
+            .services img {
+                max-width: 120px;
+            }
+            
+            /* A altura do header pode ser menor, então ajustamos o padding do main */
+            main {
+                padding-top: 60px; 
+            }
+        }
+    </style>
+
+    
+    
+<script type="text/javascript" src="https://public.tableau.com/javascripts/api/tableau-2.9.1.min.js"></script>
+
+<script type="text/javascript">
+
+    window.addEventListener("load", mediaSizer);
+    //window.addEventListener("resize", mediaSizer);
+    // Listeners that will react when the page first loads or is resized.
+    // If any of these events take place the mediaSizer() function executes.
+
+    var vizList = [
+
+        "https://public.tableau.com/views/resultadorepvendasgrupoconde/AcompanhamentodeResultado?:language=en-US&publish=yes&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link",
+        "https://public.tableau.com/views/HUMANRESOURCES-HRExpensesDashboardBrasilgrupoconde/Cockpit?:language=en-US&publish=yes&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link",
+        "https://public.tableau.com/shared/9DP8W9RJS?:display_count=n&:origin=viz_share_link",
+        "https://public.tableau.com/views/Demofarmaciasgrupoconde/CockpitFarmcia?:language=en-US&publish=yes&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link",
+        "https://public.tableau.com/views/2-Templatespolipecas/Template?:language=pt-BR&publish=yes&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link",
+        "https://public.tableau.com/views/RetailDemowithSpatialAnalyticsgrupoconde/LayoutdeFarmcia?:language=en-US&publish=yes&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link",
+        "https://public.tableau.com/views/Howhastheworldchangedsince1962/WorldIndicators?:language=en-US&:display_count=n&:origin=viz_share_link",
+        "https://public.tableau.com/views/Ocorrnciasgrupoconde/Reclamaes?:language=en-US&publish=yes&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link",
+        "https://public.tableau.com/views/RetailDemowithSpatialAnalyticspoptrade/LayoutdeLoja?:language=pt-BR&publish=yes&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link",
+        "https://public.tableau.com/views/FacebookAdsDashboard_15566377846980/ExecutiveSummary?:language=en-US&:toolbar=n&:display_count=n&:origin=viz_share_link",
+        "https://public.tableau.com/views/ReresentantedeVendasgrupoconde/RepVendasBenchmark?:language=en-US&publish=yes&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link",
+
+        "https://public.tableau.com/views/SpendAnalyticsDashboard_16056925975720/Home?:apiInternalVersion=1.131.0&:disableUrlActionsPopups=n&navSrc=Opt&:embed=y&navType=0&:suppressDefaultEditBehavior=n&mobile=n&:toolbar=n&:hideEditButton=y&:hideEditInDesktopButton=n&:jsdebug=n&:apiExternalVersion=3.6.0&:display_count=n&:origin=viz_share_link",
+        "https://public.tableau.com/views/1-DesigningEffectiveDashboardsPublic/Intro?:language=en-US&:display_count=n&:origin=viz_share_link",
+        "https://public.tableau.com/views/Embedded_Analytics/Introduo?:language=en-US&:display_count=n&:origin=viz_share_link"
+
+
+
+    ];
+    // Array of Tableau Server URLs for dashboard or sheet navigation.
+
+    var viz,
+        vizLen = vizList.length,
+        vizCount = 0,
+        devType,
+        vHideTabs = true,
+        vHideToolbar = true;
+    var options = {
+        device: devType,
+    };
+
+
+    function mediaSizer() {
+        // Determines the correct viz layout according to screen sizes.
+        if (window.matchMedia("(max-width: 450px)").matches) {
+            //alert("I am a phone layout!");
+            devType = 'phone';
+            vWidth = 410;
+            vHeight = 2000;
+            launchViz(0);
+            vHeight = 1200;
+            launchViz(1);
+            vHeight = 2000;
+            launchViz(3);
+            vHeight = 1600;
+            launchViz(5);
+            vHeight = 2000;
+
+            launchViz(7);
+            vHeight = 1600;
+           //launchViz(8);
+            launchViz(10);
+
+            //options.device = 'phone';
+        } else if (window.matchMedia("(max-width: 980px)").matches) {
+            //alert("I am a tablet layout!");
+            devType = 'tablet';
+            vWidth = 980;
+            //options.device = 'tablet';
+            console.log("devtype: " + devType)
+            console.log("launch0")
+            launchViz(0);
+            console.log("launch1")
+            launchViz(1);
+            console.log("launch2")
+
+          //  launchViz(2);
+            //launchViz(3);
+           // launchViz(4);
+
+            launchViz(6);
+
+            // Launches the viz again with the new sizing at the current index of vizList.
+        } else {
+            //alert("I am a desktop layout!");
+            devType = 'desktop';
+            vWidth = 1600;
+            vHeight = 800;
+            //options.device = 'desktop';
+            console.log("devtype: " + devType)
+            console.log("launch0")
+            launchViz(0);
+            console.log("launch1")
+            vHeight = 800;
+            launchViz(1);
+            vHeight = 900;
+            console.log("launch2")
+
+            //launchViz(2);
+            console.log("launch3")
+            launchViz(3);
+           // launchViz(4);
+            vHideToolbar = true;
+            vHideTabs = true;
+            launchViz(5);
+            vWidth = 1000;
+            launchViz(6);
+            vWidth = 1600;
+
+            vHideToolbar = false;
+            vHideTabs = false;
+            vHeight = 800;
+            launchViz(7);
+            vWidth = 1600;
+           // launchViz(8);
+           // vHeight = 1000;
+            //launchViz(9);
+            vHeight = 900;
+            launchViz(10);
+            //vHeight = 1000;
+           // launchViz(11);
+            launchViz(12);
+            launchViz(13);
+
+            // Launches the viz again with the new sizing at the current index of vizList.
+        }
+
+    }
+
+
+    function launchViz(vizNav) {
+        // JS object targeting a div in the html document. (vizNav) will pass navigation values to move back and forth across vizList.
+        console.log("vizContainer" + vizNav)
+        console.log("devtype: " + devType)
+        var vizDiv = document.getElementById("vizContainer" + vizNav),
+            // Will embed the visualization on a div with id="VizContainer"
+            options = {
+                device: devType,
+                width: vWidth,
+                height: vHeight,
+                hideTabs: vHideTabs,
+                hideToolbar: vHideToolbar,
+                onFirstInteractive: function () {
+                    listenToMarksSelection();
+                }
+            };
+
+
+        var vizURL = vizList[vizNav];
+        // Dynamic URL returning the string from vizList at index = vizNav (viz to be displayed).
+
+        try {
+            // Initializes the viz from the array with desired options. 
+            viz = new tableau.Viz(vizDiv, vizURL, options);
+            if (!viz) throw 'viz not initialized'
+        }
+        catch (err) {
+            alert(err);
+        }
+        finally {
+            console.log('whatever')
+            console.count('initViz')
+        }
+
+    }
+
+</script>
+</head>
+<body>
+
+    <header>
+        
+        <img alt="Logo"> 
+
+        </header>
+
+<main>
+        <section>
+            <p>-</p>
+            <p>-</p>
+            <h2> Tableau Grupo Conde 2025 - Embedded</h2>
+            <p>Todo conteúdo é fictício com objetivo apenas educativo para esta apresentação.</p>
+        </section>
+
+        <section class="services">
+            <h2>Objetivo</h2>
+            <p>Entender como a plataforma Tableau pode fornecer dashboards embeddados no seu site com qualquer tipo de formatação.</p>
+            <div>
+                <img src="./assets/download.png" alt="Serviço 1">
+            </div>
+        </section>
+<section>
+
+                
+
+    
+        <div style="text-align: center;">
+            <div style="display: inline-block;">
+                <p> Este é um micro-site criado somente para ilustrar o que seria o Tableau embedded no seu site. Somente alguns exemplos para inspira-los 
+                </p>
+                <p>na avaliação do Tableau e para conhecermos melhor o seu use case. Todos os dashboards apresentados contem dados ficticios para fins educacionais </p>
+                <div id="vizContainer0"></div>
+            </div>
+        </div>
+    
+    
+    
+    
+    
+    
+        <div style="text-align: center;">
+            <div style="display: inline-block;">
+                <p> - </p>
+                <p> Abaixo um exemplo de dashboard para acompanhamento de Farmacias.</p>
+                <div id="vizContainer3"></div>
+            </div>
+        </div> 
+    
+        <div style="text-align: center;">
+            <div style="display: inline-block;">
+                <p> - </p>
+                <p> Abaixo um dashboard que acompanha despesas de recursos humanos. Voce pode encontrar esse
+                    dashboard nos Accelerators Tableau</p>
+                <p>Os aceleradores do Tableau são painéis pré-criados projetados para ajudar você a obter um impulso
+                    inicial na análise de dados.</p>
+                <p>Adaptados a setores específicos e aplicativos corporativos, os Aceleradores são criados com dados
+                    de amostra que você pode trocar por seus próprios dados,</p>
+                <p> permitindo que você descubra insights com configuração mínima.</p>
+                <div id="vizContainer1"></div>
+            </div>
+        </div>
+    <div style="text-align: center;">
+            <div style="display: inline-block;">
+                <p> - </p>
+                <p> Abaixo um dashboard para layout de farmácias e prateleiras</p>
+    
+                <div id="vizContainer5"></div>
+            </div>
+        </div> 
+        
+        <div style="text-align: center;">
+            <div style="display: inline-block;">
+                <p> - </p>
+                <p> Abaixo um dashboard que acompanha a distribuição de chamados de reclamações pelos tipos de serviço.</p>
+                
+                <div id="vizContainer7"></div>
+            </div>
+        </div>
+      <div style="text-align: center;">
+            <div style="display: inline-block;">
+                <p> - </p>
+                <p> Abaixo um dashboard para acompanhamento dos Vendedores para Benchmark</p>
+                <p>Permite um benchmark para entenderem como estão performando comparado aos pares ou outros
+                    parceiros do mesmo mercado</p>
+                <p> - - </p>
+                <div id="vizContainer10"></div>
+            </div>
+        </div>
+    <div style="text-align: center;">
+            <div style="display: inline-block;">
+                <p> - </p>
+                <p> Abaixo um dashboard mais lúdico disponível no Tableau Public. Voce pode acompanhar a animação
+                    clicando no triangulo no canto inferior direito</p>
+                <p>O Tableau Public é uma plataforma gratuita para explorar, criar e compartilhar publicamente
+                    visualizações de dados online. </p>
+                <p> Com o maior repositório de visualizações de dados do mundo para aprender, o Tableau Public
+                    facilita o desenvolvimento de habilidades de dados.</p>
+    
+                <div id="vizContainer6"></div>
+            </div>
+        </div>
+        <div style="text-align: center;">
+            <div style="display: inline-block;">
+                <p>-</p>
+                <p> O dashboard a seguir é um exemplo de webinar que utilizamos no inicio da jornada para criação de
+                    cultura de dados. </p>
+                <p>Tem muita informação relevante para que voce possa conhecer um pouco mais sobre a plataforma
+                    Tableau e como te ajudamos a construir cultura de dados/>
+                <p>-</p>
+                <div id="vizContainer12"></div>
+            </div>
+        </div>
+        <div style="text-align: center;">
+            <div style="display: inline-block;">
+                <p>-</p>
+                <p> O dashboard a seguir é um exemplo de webinar sobre embedded. </p>
+                <p>Tem muita informação relevante para que voce possa conhecer um pouco mais sobre embedded</p>
+                <p>-</p>
+                <div id="vizContainer13"></div>
+            </div>
+        </div>
+    </div>
+
+
+
+</section>
+        <section>
+            <h2>Sobre Nós</h2>
+            <p>O Tableau é uma plataforma de análise visual que está transformando a maneira como usamos dados para solucionar problemas, capacitando pessoas e organizações para que obtenham o máximo de seus dados.</p>
+            <p>O Tableau impulsiona pessoas e organizações com os dados</p>
+            
+            <a href= "https://www.tableau.com/pt-br/why-tableau"> Visite o site </a>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Tableau/Salesforce - Todos os direitos reservados.</p>
+    </footer>
+
+</body>
+</html>
